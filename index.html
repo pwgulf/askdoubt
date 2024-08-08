@@ -1,0 +1,240 @@
+index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0a192f;
+      color: #64ffda;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+
+    .form-card1 {
+      background-image: linear-gradient(163deg, #64ffda 0%, #64ffda 100%);
+      border-radius: 22px;
+      box-shadow: 0px 0px 30px 1px rgba(100, 255, 218, 0.3);
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px;
+    }
+
+
+    .form-card2 {
+      background-color: #171717;
+      border-radius: 20px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+
+    .form-card2:hover {
+      transform: scale(0.98);
+      border-radius: 20px;
+    }
+
+
+    .form-heading {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #64ffda;
+      font-size: 1.5em;
+    }
+
+
+    .form-field {
+      margin-bottom: 15px;
+    }
+
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #64ffda;
+      background: none;
+      color: #64ffda;
+    }
+
+
+    .sendMessage-btn {
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background-color: #64ffda;
+      color: #000;
+      font-weight: bold;
+      width: 100%;
+      transition: all ease-in-out 0.3s;
+    }
+
+
+    .sendMessage-btn:hover {
+      background-color: #000;
+      color: #64ffda;
+      box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+    }
+
+
+    .submission-feedback {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #64ffda;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-card1">
+    <div class="form-card2">
+      <form class="form" id="doubtForm">
+        <p class="form-heading">Ask a Doubt?</p>
+
+
+        <div class="form-field">
+          <input required placeholder="Name" class="input-field" type="text" name="name" />
+        </div>
+
+
+        <div class="form-field">
+          <div style="display: flex;">
+            <select required class="input-field" style="width: 40%; margin-right: 10px;" name="countryCode">
+              <option value="+91">India (+91)</option>
+              <option value="+971">UAE (+971)</option>
+              <option value="+966">Saudi (+966)</option>
+              <option value="+974">Qatar (+974)</option>
+              <option value="+965">Kuwait (+965)</option>
+              <option value="+973">Bahrain (+973)</option>
+              <option value="+968">Oman (+968)</option>
+            </select>
+
+
+            <input required placeholder="Login Number" class="input-field" type="number" style="width: 70%;" name="loginNumber" />
+          </div>
+        </div>
+
+
+        <div class="form-field">
+          <select required class="input-field" name="batch">
+            <option value="" disabled selected>Select Batch</option>
+            <option value="Impact">Impact</option>
+            <option value="Succeed">Succeed</option>
+            <option value="Exceed">Exceed</option>
+            <option value="Achievers">Achievers</option>
+            <option value="Triumph">Triumph</option>
+          </select>
+        </div>
+
+
+        <div class="form-field">
+          <select required class="input-field" name="section">
+            <option value="" disabled selected>Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
+        </div>
+
+
+        <div class="form-field">
+          <select required class="input-field" name="subject">
+            <option value="" disabled selected>Select Subject</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Zoology">Zoology</option>
+            <option value="Botany">Botany</option>
+            <option value="Maths">Maths</option>
+            <option value="SST">SST</option>
+            <option value="English">English</option>
+            <option value="Biology">Biology</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+
+        <div class="form-field">
+          <textarea required placeholder="Doubt in Detail" cols="30" rows="3" class="input-field" name="doubtDetail"></textarea>
+        </div>
+
+
+        <div class="form-field">
+          <label for="fileUpload">Upload Files (Images or PDFs):</label>
+          <input id="fileUpload" name="fileUpload" class="input-field" type="file" accept=".jpg,.jpeg,.png,.pdf" multiple required />
+        </div>
+
+
+        <button class="sendMessage-btn" type="submit">Submit</button>
+        <div class="submission-feedback" id="feedback">Submitting...</div>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+    document.getElementById("doubtForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const feedback = document.getElementById("feedback");
+      feedback.style.display = "block";
+
+
+      const formData = new FormData(event.target);
+
+
+      // Handle file upload
+      const fileUpload = document.getElementById("fileUpload").files;
+      if (fileUpload.length > 0) {
+        const filePromises = [];
+        for (let i = 0; i < fileUpload.length; i++) {
+          filePromises.push(convertFileToBase64(fileUpload[i]));
+        }
+        const filesBase64 = await Promise.all(filePromises);
+        formData.append('fileUpload', JSON.stringify(filesBase64));
+        formData.append('fileNames', JSON.stringify(Array.from(fileUpload).map(file => file.name))); // Add filenames
+      }
+
+
+      fetch("https://script.google.com/macros/s/AKfycbypEgLIPrVjAzhw5jw6XCCd6TUPBM7KNKdUJjWXF9NWNK9UDAhdDGqkR9WlZSk08QDW/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(result => {
+        feedback.innerText = "Form submitted successfully!";
+        setTimeout(() => {
+          feedback.style.display = "none";
+          event.target.reset();
+        }, 2000);
+      })
+      .catch(error => {
+        feedback.innerText = "Error submitting the form. Please try again.";
+        setTimeout(() => {
+          feedback.style.display = "none";
+        }, 2000);
+      });
+    });
+
+
+    function convertFileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.replace(/^data:.+;base64,/, ''));
+        reader.onerror = error => reject(error);
+      });
+    }
+  </script>
+</body>
+</html>
